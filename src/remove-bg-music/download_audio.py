@@ -78,6 +78,6 @@ def main(input_dir, output_dir):
 
 
 if __name__ == "__main__":
-    input_dir = 'data/stt_ab_csv'
-    output_dir = 'data/audio_files'
+    input_dir = '../../data/stt_ab_csv'
+    output_dir = '../../data/audio_files'
     main(input_dir, output_dir)
