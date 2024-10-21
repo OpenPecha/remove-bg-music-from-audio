@@ -63,6 +63,6 @@ def process_directory(input_dir, output_dir):
 
 
 if __name__ == "__main__":
-    input_dir = 'data/audio_with_bg_music'
-    output_dir = 'data/cleaned_audio'
+    input_dir = 'data/audio_with_no_music'
+    output_dir = 'data/test_cleaned_audio'
     process_directory(input_dir, output_dir)
