@@ -1,7 +1,6 @@
 import os
 import subprocess
 import shutil
-import asyncio
 from multiprocessing import Pool, cpu_count
 
 
@@ -10,25 +9,20 @@ def ensure_directory_exists(dir_path):
         os.makedirs(dir_path)
 
 
-async def separate_audio(input_file, output_dir, use_gpu=False):
+def separate_audio(input_file, output_dir):
     command = [
         'demucs',
-        '-n', 'mdx_extra',
+        '-n', 'htdemucs',
         '--two-stems=vocals',
         input_file,
         '-o', output_dir
     ]
-    
-    if use_gpu:
-        command.append("--device=cuda")
-    
-    process = await asyncio.create_subprocess_exec(*command)
-    await process.wait()
+    subprocess.run(command)
 
 
 def rename_vocals_file(original_file, output_dir):
     original_filename = os.path.basename(original_file).rsplit(".", 1)[0] + ".wav"
-    vocals_path = os.path.join(output_dir, 'mdx_extra', os.path.basename(
+    vocals_path = os.path.join(output_dir, 'htdemucs', os.path.basename(
         original_file).rsplit(".", 1)[0], 'vocals.wav')
     new_vocals_path = os.path.join(output_dir, original_filename)
 
@@ -40,20 +34,33 @@ def rename_vocals_file(original_file, output_dir):
 def resample_to_16k(audio_file):
     temp_file = audio_file.replace(".wav", "_16k.wav")
     command = [
-        'ffmpeg', '-i', audio_file, '-ar', '16000', temp_file, '-loglevel', 'error'
+        'ffmpeg', '-i', audio_file,
+        '-ar', '16000',
+        temp_file
     ]
     subprocess.run(command)
     if os.path.exists(temp_file):
         shutil.move(temp_file, audio_file)
 
 
-def process_single_file(input_file_path, output_dir, use_gpu=False):
+def process_single_file(input_file_path, output_dir):
     print(f"Processing {input_file_path}...")
-    asyncio.run(separate_audio(input_file_path, output_dir, use_gpu))
+    separate_audio(input_file_path, output_dir)
     rename_vocals_file(input_file_path, output_dir)
 
 
-def process_directory(input_dir, output_dir, use_gpu=False):
+def process_batch(batch_files, output_dir):
+    with Pool(cpu_count()) as pool:
+        pool.starmap(process_single_file, [(file, output_dir) for file in batch_files])
+
+
+def chunks(lst, chunk_size):
+    """Yield successive chunks from a list."""
+    for i in range(0, len(lst), chunk_size):
+        yield lst[i:i + chunk_size]
+
+
+def process_directory(input_dir, output_dir, batch_size=1000):
     ensure_directory_exists(output_dir)
 
     files_to_process = [
@@ -62,13 +69,13 @@ def process_directory(input_dir, output_dir, use_gpu=False):
         if filename.endswith((".wav", ".mp3"))
     ]
 
-    with Pool(cpu_count() + 2) as pool:
-        pool.starmap(process_single_file, [(file, output_dir, use_gpu) for file in files_to_process])
+    for batch in chunks(files_to_process, batch_size):
+        print(f"Processing batch of {len(batch)} files...")
+        process_batch(batch, output_dir)
 
 
 if __name__ == "__main__":
-    input_dir = '../../data/audio_files'
+    input_dir = '../../data/audio_with_bg_music'
     output_dir = '../../data/cleaned_audio'
-    
-
-    process_directory(input_dir, output_dir, use_gpu=True)
+    batch_size = 1000  
+    process_directory(input_dir, output_dir, batch_size)
