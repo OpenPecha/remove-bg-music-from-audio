@@ -74,6 +74,6 @@ def process_directory(input_dir, output_dir, batch_size=500):
     print(f"All audio files processed! Total files saved: {total_files}")
 
 if __name__ == "__main__":
-    input_dir = '../../data/audio_with_bg_music'
+    input_dir = '../../data/audio_files'
     output_dir = '../../data/cleaned_audio'
     process_directory(input_dir, output_dir, batch_size=500)
