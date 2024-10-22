@@ -61,18 +61,19 @@ def process_directory(input_dir, output_dir, batch_size=500):
                     yield os.path.join(root, filename)
 
     files_to_process = list(file_generator())
-
-    total_batches = (len(files_to_process) + batch_size - 1) // batch_size
+    total_files = len(files_to_process)  
+    total_batches = (total_files + batch_size - 1) // batch_size
 
     for batch_num, batch in enumerate(chunks(files_to_process, batch_size), start=1):
         print(f"Processing batch {batch_num}/{total_batches} with {len(batch)} files...")
         with Pool(cpu_count()) as pool:
             pool.starmap(process_single_file, [(file, output_dir) for file in batch])
 
-       
         print(f"Completed batch {batch_num}/{total_batches}")
+
+    print(f"All audio files processed! Total files saved: {total_files}")
 
 if __name__ == "__main__":
     input_dir = '../../data/audio_files'
     output_dir = '../../data/cleaned_audio'
-    process_directory(input_dir, output_dir, batch_size=500)  
+    process_directory(input_dir, output_dir, batch_size=500)
