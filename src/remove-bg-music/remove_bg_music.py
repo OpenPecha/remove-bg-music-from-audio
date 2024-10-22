@@ -31,10 +31,10 @@ def resample_to_16k(audio_file):
     temp_file = audio_file.replace(".wav", "_16k.wav")
     command = [
         'ffmpeg', '-i', audio_file,
-        '-ar', '16000',  # Resample to 16kHz
-        '-ac', '1',      # Convert to mono channel
+        '-ar', '16000',  
+        '-ac', '1',      
         temp_file,
-        '-y'             # Overwrite output file if it exists
+        '-y'           
     ]
     subprocess.run(command, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
     if os.path.exists(temp_file):
@@ -51,7 +51,7 @@ def chunks(lst, n):
     for i in range(0, len(lst), n):
         yield lst[i:i + n]
 
-def process_directory(input_dir, output_dir, batch_size=1000):
+def process_directory(input_dir, output_dir, batch_size=500):
     ensure_directory_exists(output_dir)
 
     def file_generator():
@@ -73,6 +73,6 @@ def process_directory(input_dir, output_dir, batch_size=1000):
         print(f"Completed batch {batch_num}/{total_batches}")
 
 if __name__ == "__main__":
-    input_dir = '../../data/audio_files'
-    output_dir = '../../data/cleaned_audio'
+    input_dir = 'data/audio_with_bg_music'
+    output_dir = 'data/cleaned_audio'
     process_directory(input_dir, output_dir, batch_size=1000)  
