@@ -51,7 +51,7 @@ def chunks(lst, n):
     for i in range(0, len(lst), n):
         yield lst[i:i + n]
 
-def process_directory(input_dir, output_dir, batch_size=500):
+def process_directory(input_dir, output_dir, batch_size=100):
     ensure_directory_exists(output_dir)
 
     def file_generator():
@@ -76,4 +76,4 @@ def process_directory(input_dir, output_dir, batch_size=500):
 if __name__ == "__main__":
     input_dir = '../../data/audio_files'
     output_dir = '../../data/cleaned_audio'
-    process_directory(input_dir, output_dir, batch_size=500)
+    process_directory(input_dir, output_dir, batch_size=100)
