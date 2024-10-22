@@ -73,6 +73,6 @@ def process_directory(input_dir, output_dir, batch_size=500):
         print(f"Completed batch {batch_num}/{total_batches}")
 
 if __name__ == "__main__":
-    input_dir = 'data/audio_with_bg_music'
-    output_dir = 'data/cleaned_audio'
+    input_dir = '../../data/audio_files'
+    output_dir = '../../data/cleaned_audio'
     process_directory(input_dir, output_dir, batch_size=1000)  
