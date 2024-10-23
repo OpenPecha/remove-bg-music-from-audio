@@ -29,6 +29,11 @@ def rename_vocals_file(original_file, output_dir):
     if os.path.exists(vocals_path):
         shutil.move(vocals_path, new_vocals_path)
         resample_to_16k(new_vocals_path)
+    # remove non vocal` file
+    no_vocals_path = os.path.join(output_dir, 'htdemucs', os.path.basename(
+        original_file).rsplit(".", 1)[0], 'no_vocals.wav')
+    if os.path.exists(no_vocals_path):
+        os.remove(no_vocals_path)
 
 
 def resample_to_16k(audio_file):
@@ -43,7 +48,7 @@ def resample_to_16k(audio_file):
         shutil.move(temp_file, audio_file)
 
 
-def process_single_file(input_file_path, output_dir):
+def process_audio_file(input_file_path, output_dir):
     print(f"Processing {input_file_path}...")
     separate_audio(input_file_path, output_dir)
     rename_vocals_file(input_file_path, output_dir)
@@ -51,11 +56,10 @@ def process_single_file(input_file_path, output_dir):
 
 def process_batch(batch_files, output_dir):
     with Pool(cpu_count()) as pool:
-        pool.starmap(process_single_file, [(file, output_dir) for file in batch_files])
+        pool.starmap(process_audio_file, [(file, output_dir) for file in batch_files])
 
 
 def chunks(lst, chunk_size):
-    """Yield successive chunks from a list."""
     for i in range(0, len(lst), chunk_size):
         yield lst[i:i + chunk_size]
 
@@ -75,7 +79,7 @@ def process_directory(input_dir, output_dir, batch_size=1000):
 
 
 if __name__ == "__main__":
-    input_dir = '../../data/audio_files'
+    input_dir = '../../data/audio_with_bg_music'
     output_dir = '../../data/cleaned_audio'
-    batch_size = 1000  
+    batch_size = 1000
     process_directory(input_dir, output_dir, batch_size)
