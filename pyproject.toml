@@ -16,7 +16,9 @@ classifiers = [
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
-
+dependencies = [
+    "demucs"
+]
 [project.optional-dependencies]
 dev = [
     "pytest",

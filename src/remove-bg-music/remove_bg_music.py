@@ -79,7 +79,7 @@ def process_directory(input_dir, output_dir, batch_size=1000):
 
 
 if __name__ == "__main__":
-    input_dir = '../../data/audio_with_bg_music'
+    input_dir = '../../data/audio_files'
     output_dir = '../../data/cleaned_audio'
     batch_size = 1000
     process_directory(input_dir, output_dir, batch_size)
